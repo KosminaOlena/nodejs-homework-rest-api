@@ -81,17 +81,28 @@ const updateStatusUser = async (req, res) => {
 
 const updateAvatar = async(req, res) => {
     const {_id} = req.user;
-    const {path: tempUpload, originalname} = req.file;
-    const img = await Jimp.read(tempUpload);
-    await img.cover( 250, 250, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE).writeAsync(tempUpload);
-    const filename = `${_id}_${originalname}`;
-    const resultUpload = path.join(avatarsDir, filename);
-    await fs.rename(tempUpload, resultUpload);
-    const avatarURL = path.join("avatars", filename);
-    await User.findByIdAndUpdate(_id, {avatarURL});
-    res.json({
-        avatarURL,
-    })
+    console.log(req.file);
+    if (req.file !== undefined){    
+        const {path: tempUpload, originalname} = req.file;
+        const img = await Jimp.read(tempUpload);
+        await img.cover( 250, 250, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE).writeAsync(tempUpload);
+        const filename = `${_id}_${originalname}`;
+        const resultUpload = path.join(avatarsDir, filename);
+        await fs.rename(tempUpload, resultUpload);
+        const avatarURL = path.join("avatars", filename);
+        await User.findByIdAndUpdate(_id, {avatarURL});
+        res.json({
+            avatarURL,
+        })
+
+    }else{ 
+        const avatarURL = path.join("avatars", "avatar.jpg");      
+        await User.findByIdAndUpdate(_id, {avatarURL});
+        res.status(400).json({
+           avatarURL,
+        })
+    }
+
 }
 
 module.exports = {
