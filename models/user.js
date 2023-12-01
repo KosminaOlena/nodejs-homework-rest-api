@@ -26,6 +26,10 @@ const userSchema = new Schema({
         type: String,
         default: ""
       },
+      avatarURL: {
+        type: String,
+        required: true
+      }
 }, {versionKey: false, timestamps: true});
 
 userSchema.post("save", handleMongooseError);
@@ -43,7 +47,6 @@ const loginSchema = Joi.object({
 })
 
 const updateStatusSchema = Joi.object({
-  _id: Joi.string().required(),
   subscription: Joi.any().valid('starter', 'pro', 'business').required().error(new Error('enter a valid user subscription')),
 })
 
